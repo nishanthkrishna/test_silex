@@ -1,0 +1,17 @@
+{% extends '@admin/layout.html.twig' %}
+
+{% block container_content %}
+
+    {% if error %}
+                <div class="alert alert-error">Login falied :{{ error }}</div>
+    {% endif %}
+       <form action="{{ path('admin_login_check') }}" method="post">
+            <p><label for="username">Username: </label><input id="username" type="text" name="_username" value="{{ last_username }}"></p>
+            <p><label for="password">Password: </label><input id="password" type="password" name="_password"></p>
+            <p><input type="submit" class="btn-small" value="Log in"></p>
+
+        </form>
+
+{% endblock %}
+
+ 

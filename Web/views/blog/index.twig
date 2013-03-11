@@ -1,0 +1,6 @@
+{% for post in posts %}
+<h2> {{ loop.index }} - {{ post.title }}</h2>
+<div>{{ post.body }}</div>
+
+{% endfor %}
+
