@@ -3,26 +3,33 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Silex\Provider\FormServiceProvider;
+
 
 $app = new Silex\Application();
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.options' => array('cache' => __DIR__ . '/cache/compilation_cache')
+    'twig.options' => array('cache' => __DIR__ . '/cache/compilation_cache'),
 ));
 
 $app['twig.loader.filesystem']->addPath(  __DIR__ . '/views/admin',"admin");
 $app['twig.loader.filesystem']->addPath(  __DIR__ . '/views/blog',"blog");
 
 
+
 // service providers
+$app->register(new FormServiceProvider());
+
+$app->register(new Silex\Provider\TranslationServiceProvider(), array(
+    'translator.messages' => array(),
+));
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 $app->register(new Silex\Provider\SessionServiceProvider()); //SessionServiceProvider
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-    'dbs.options' => array(
-        'mysql' => array(
+        'db.options' => array(
             'driver' => 'pdo_mysql',
             'host' => 'localhost',
             'dbname' => 'silex',
@@ -30,7 +37,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
             'password' => '',
             'charset' => 'utf8',
         )
-    ),
+    
 ));
 
 $app->register(new Silex\Provider\SecurityServiceProvider(), array(
@@ -47,7 +54,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
             ),*/
             'users' =>$app->share(function() use ($app) {
                 //var_dump($app['db']['mysql']);
-                        return new Web\User\UserProvider($app['dbs']['mysql']);
+                        return new Web\User\UserProvider($app['db']);
             })
         ),
                   
@@ -85,7 +92,7 @@ $app['debug'] = true;
 
 
 $app->get('/', function () use ($app) {
-            $blogPosts = $app['dbs']['mysql']->fetchAll('SELECT * FROM blog');
+            $blogPosts = $app['db']->fetchAll('SELECT * FROM blog');
             return $app['twig']->render('@blog/index.twig', array('posts' => $blogPosts));
         });
 
