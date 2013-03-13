@@ -1,0 +1,26 @@
+
+{% extends 'layout.html.twig' %}
+
+{% block container_content %}
+<table class="table table-hover">
+    <tr></tr>
+{% for content in contents %}
+    {% if loop.index==1  %}
+    <tr>
+     {% for key in content|keys %}
+      <th>{{key|capitalize|replace({"_":" "})}}</th>
+     {% endfor %}
+      </tr>
+    {% endif %}
+  <tr> 
+  {% for key,value in content %}
+  <td> {{value}} </td>
+   {% endfor %}
+  </tr>
+
+{% endfor %}
+</table>
+   
+{% endblock %}
+
+

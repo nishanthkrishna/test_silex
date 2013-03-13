@@ -1,12 +1,11 @@
 <?php
 
-namespace Web\Admin\Form;
+namespace Web\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Pimple;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
-
 
 Class TableType extends AbstractType {
 
@@ -19,42 +18,26 @@ Class TableType extends AbstractType {
 
         $schemaManager = $this->container['db']->getSchemaManager();
 
+
         $details = $schemaManager->listTableDetails($this->table);
 
         $foreignKeys = $schemaManager->listTableForeignKeys($this->table);
-   
+        $relations = array();
         foreach ($foreignKeys as $foreignKey) {
-            $foreignTable=$foreignKey->getForeignTableName();
-            $foreignColums=$foreignKey->getForeignColumns();
-            $localColums=$foreignKey->getLocalColumns();
-            
-             print "<pre>";
-        print_r($foreignKey->getForeignTableName());
-        print_r($foreignKey->getForeignColumns());
-        print_r($foreignKey->getLocalColumns());
-       // $foreignKey->getLocalTableName();
-        print "</pre>";
+            $foreignTable = $foreignKey->getForeignTableName();
+            $foreignColums = $foreignKey->getForeignColumns();
+            $localColums = $foreignKey->getLocalColumns();
+            $relations[$localColums[0]] = array("table" => $foreignTable, "field" => $foreignColums); // suppports only one level
         }
 
-       
+
 
         foreach ($schemaManager->listTableColumns($this->table) as $column) {
-
-
-            // here we try to display nicely database relations w/ foreign keys
-            /*
-              if (false !== strpos($column->getName(), '_id')) {
-              $table = str_replace('_id', '', $column->getName());
-
-              $dataMap = new DataMap($this->container['db'], $schemaManager);
-              $choices = $dataMap->mapForeignKeys($table, $column);
-
-              if (is_array($choices)) {
-              $column->setType(Type::getType('array'));
-              }
-              }
-             */
-
+            if (!empty($relations) and in_array($column->getName(), array_keys($relations))) {
+                $relation_row = $relations[$column->getName()];
+                $builder->add($column->getName(), new ForeignKeyType($this->container['db'], $relation_row['table'], $relation_row['field'][0]));
+                continue;
+            }
             if (false === strpos($column->getName(), 'system_')) { // dont  take  Column whth system_ prefix
                 switch ($column->getType()) {
                     case 'Integer':
