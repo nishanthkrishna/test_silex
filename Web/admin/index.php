@@ -16,10 +16,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $app['twig.loader.filesystem']->addPath(__DIR__ . '/views');
 
 
-$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
-                    $twig->addGlobal('pi', 3.14);
-                    return $twig;
-                }));
 
 
 
@@ -54,7 +50,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
             'logout' => array('logout_path' => '/logout'),
             'users' => $app->share(function() use ($app) {
                         //var_dump($app['db']['mysql']);
-                        return new Web\User\UserProvider($app['db']);
+                        return new SilexF\User\UserProvider($app['db']);
                     })
         ),
     ),

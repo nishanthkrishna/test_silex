@@ -1,7 +1,9 @@
 {% extends 'layout.html.twig' %}
 
 {% block container_content %}
-
+{% if is_granted('ROLE_ADMIN') %}
+Admin home
+{% else %}
     {% if error %}
                 <div class="alert alert-error">Login falied :{{ error }}</div>
     {% endif %}
@@ -11,7 +13,8 @@
             <p><input type="submit" class="btn-small" value="Log in"></p>
 
         </form>
-
+{% endif %}
 {% endblock %}
+                
 
  

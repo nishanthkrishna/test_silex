@@ -55,17 +55,18 @@
 
             <div class="container-fluid">
                 <div class="row-fluid">
+                      {% if app.security.token and is_granted('ROLE_ADMIN')  %}
                     <div class="span3"> 
             <ul class="nav nav-list">
+          
               <li class="nav-header">Application Content</li>
-              <li class="active"><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li class="nav-header">Sidebar</li>
-              <li><a href="#">Link</a></li>
+                     {% for value in contentPages %}
+      <li><a href="{{url('admin_table_content', {table: value|replace({"content_":""})}) }}">Manage {{value|replace({"_":" "})}} </a> </li>
+     {% endfor %}
             
             </ul>
           </div>
-            
+              {% endif %} 
                     <div class="span9">
             {% block container_content %}{% endblock %}
                         </div>

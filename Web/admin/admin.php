@@ -1,7 +1,17 @@
 <?php
 
-use Web\Form as FormTable;
+
 use Symfony\Component\HttpFoundation\Request;
+
+
+
+$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+                    $contentTypes=new SilexF\Admin\Page\ContentTypes($app['db']);
+                    $twig->addGlobal('contentPages',  $contentTypes->fetchAll() );
+                    return $twig;
+                }));
+                
+                
 
 $admin = $app['controllers_factory'];
 
@@ -11,7 +21,7 @@ $admin->get('/settings', function(Silex\Application $app) {
         })->bind("settings");
         
 $admin->match('/content/{table}/add', function (Request $request, Silex\Application $app, $table) {
-            $form = $app['form.factory']->create(new FormTable\TableType($app, $table));
+            $form = $app['form.factory']->create(new SilexF\Form\TableType($app, $table));
 
             if ('POST' == $request->getMethod()) {
                 $form->bind($request);
@@ -30,7 +40,7 @@ $admin->match('/content/{table}/add', function (Request $request, Silex\Applicat
 
 $admin->get('/content/{table}', function (Request $request, Silex\Application $app, $table) {
             $table_content = $app['db']->fetchAll("SELECT * FROM $table");
-            return $app['twig']->render('table_content.twig', array('contents' => $table_content));
+            return $app['twig']->render('table_content.twig', array('contents' => $table_content,"table"=>$table));
         })->convert('table', function ($table) {
             return "content_" . $table;
         })->bind('admin_table_content');

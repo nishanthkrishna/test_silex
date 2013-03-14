@@ -1,6 +1,6 @@
 <?php
 
-namespace Web\Form;
+namespace SilexF\Form;
 
 use Pimple;
 use Symfony\Component\Form\AbstractType;
