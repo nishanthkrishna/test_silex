@@ -14,7 +14,6 @@ class ContentTypes {
 
     public function fetchAll() {
         $schemaManager = $this->conn->getSchemaManager();
-
         $tables = $schemaManager->listTables();
         $content_tables = array();
 

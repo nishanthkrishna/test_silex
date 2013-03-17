@@ -33,6 +33,7 @@ Class TableType extends AbstractType {
 
 
         foreach ($schemaManager->listTableColumns($this->table) as $column) {
+      
             if (!empty($relations) and in_array($column->getName(), array_keys($relations))) {
                 $relation_row = $relations[$column->getName()];
                 $builder->add($column->getName(), new ForeignKeyType($this->container['db'], $relation_row['table'], $relation_row['field'][0]));
@@ -42,7 +43,7 @@ Class TableType extends AbstractType {
                 switch ($column->getType()) {
                     case 'Integer':
                         $builder->add($column->getName(), 'integer', array(
-                            'read_only' => $column->getName() === 'id' ? true : false,
+                            'read_only' => ($column->getName() === 'id' and $column->getAutoincrement()) ? true : false,
                             'required' => $column->getNotNull(),
                         ));
                         break;

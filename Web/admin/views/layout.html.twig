@@ -58,11 +58,12 @@
                       {% if app.security.token and is_granted('ROLE_ADMIN')  %}
                     <div class="span3"> 
             <ul class="nav nav-list">
-          
+          {% if not contentPages is empty  %}
               <li class="nav-header">Application Content</li>
                      {% for value in contentPages %}
       <li><a href="{{url('admin_table_content', {table: value|replace({"content_":""})}) }}">Manage {{value|replace({"_":" "})}} </a> </li>
      {% endfor %}
+      {% endif %}
             
             </ul>
           </div>

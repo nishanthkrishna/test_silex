@@ -9,7 +9,8 @@
         "symfony/validator": "~2.1",
         "symfony/config": "~2.1",
         "symfony/translation": "~2.1",
-        "symfony/locale": "~2.1"
+        "symfony/locale": "~2.1",
+        "pagerfanta/pagerfanta": "1.0.*@dev"
      
     },
     
