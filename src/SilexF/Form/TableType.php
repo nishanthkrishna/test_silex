@@ -17,11 +17,10 @@ Class TableType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
 
         $schemaManager = $this->container['db']->getSchemaManager();
-
-
         $details = $schemaManager->listTableDetails($this->table);
-
         $foreignKeys = $schemaManager->listTableForeignKeys($this->table);
+        $primary_keys = $this->getPrimaryKeys();
+     
         $relations = array();
         foreach ($foreignKeys as $foreignKey) {
             $foreignTable = $foreignKey->getForeignTableName();
@@ -33,7 +32,7 @@ Class TableType extends AbstractType {
 
 
         foreach ($schemaManager->listTableColumns($this->table) as $column) {
-      
+
             if (!empty($relations) and in_array($column->getName(), array_keys($relations))) {
                 $relation_row = $relations[$column->getName()];
                 $builder->add($column->getName(), new ForeignKeyType($this->container['db'], $relation_row['table'], $relation_row['field'][0]));
@@ -43,7 +42,7 @@ Class TableType extends AbstractType {
                 switch ($column->getType()) {
                     case 'Integer':
                         $builder->add($column->getName(), 'integer', array(
-                            'read_only' => ($column->getName() === 'id' and $column->getAutoincrement()) ? true : false,
+                            'read_only' => ( in_array($column->getName(), $primary_keys) and $column->getAutoincrement()) ? true : false,
                             'required' => $column->getNotNull(),
                         ));
                         break;
@@ -73,6 +72,18 @@ Class TableType extends AbstractType {
 
     public function getName() {
         return 'Table' . ucfirst($this->table);
+    }
+
+     public function getPrimaryKeys() {
+        $schemaManager = $this->container['db']->getSchemaManager();
+        $table_details = $schemaManager->listTableDetails($this->table);
+        $primary_key = $table_details->getPrimaryKey();
+        $primary_colums = array();
+        if ($primary_key) {
+            $primary_colums = $primary_key->getColumns();
+       
+        }
+        return $primary_colums;
     }
 
 }

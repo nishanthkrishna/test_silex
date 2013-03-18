@@ -11,12 +11,21 @@
      {% for key in content|keys %}
       <th>{{key|capitalize|replace({"_":" "})}}</th>
      {% endfor %}
+      <th>Edit</th>
       </tr>
     {% endif %}
   <tr> 
   {% for key,value in content %}
   <td> {{value}} </td>
    {% endfor %}
+  <td>
+      {% if primary_key %}
+      <a href="{{url('admin_table_edit_content', {table: table|replace({"content_":""}),id: content[primary_key] }) }}">Edit</a>
+      {% else %} Configure primary key to get edit functionality
+
+{% endif %}
+  
+  </td>
   </tr>
 
 {% endfor %}

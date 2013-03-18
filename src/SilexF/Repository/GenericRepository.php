@@ -7,7 +7,6 @@ use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Adapter\CallbackAdapter;
 use Doctrine\DBAL\Connection;
 
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -29,21 +28,32 @@ class GenericRepository {
     }
 
     public function pagerFetch() {
-       
-        $adapter = new CallbackAdapter(array($this,'nbResultsCallback'),array($this,'getSlice'));
+
+        $adapter = new CallbackAdapter(array($this, 'nbResultsCallback'), array($this, 'getSlice'));
         $pagerfanta = new Pagerfanta($adapter);
 
-     return $pagerfanta;
+        return $pagerfanta;
     }
 
     public function nbResultsCallback() {
-       return $this->conn->fetchColumn("SELECT COUNT(*) FROM $this->table");
+        return $this->conn->fetchColumn("SELECT COUNT(*) FROM $this->table");
     }
-    public function getSlice($offset,$length) {
-        
-        return  $this->conn->fetchAll("SELECT * FROM $this->table LIMIT $offset,$length");
-        
-        
+
+    public function getSlice($offset, $length) {
+
+        return $this->conn->fetchAll("SELECT * FROM $this->table LIMIT $offset,$length");
+    }
+
+    public function getPrimaryKeys() {
+        $schemaManager = $this->conn->getSchemaManager();
+        $table_details = $schemaManager->listTableDetails($this->table);
+        $primary_key = $table_details->getPrimaryKey();
+        $primary_colums = array();
+        if ($primary_key) {
+            $primary_colums = $primary_key->getColumns();
+       
+        }
+        return $primary_colums;
     }
 
 }
