@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\Form\DoctrineOrmExtension;
 
 $app = new Silex\Application();
 
+
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.options' => array('cache' => __DIR__ . '/cache/compilation_cache'),
 ));
@@ -20,7 +21,16 @@ $app['twig.loader.filesystem']->addPath(__DIR__ . '/views');
 
 
 // service providers
+
+
+
 $app->register(new FormServiceProvider());
+
+$app->register(new Silex\Provider\ValidatorServiceProvider());
+$app->register(new Silex\Provider\TranslationServiceProvider(), array(
+    'translator.messages' => array(),
+));
+
 
 $app->register(new Silex\Provider\TranslationServiceProvider(), array(
     'translator.messages' => array(),
@@ -41,6 +51,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     )
 ));
 
+
 $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     'security.firewalls' => array(
         'admin' => array(
@@ -58,8 +69,11 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
         array('^/.+$', 'ROLE_ADMIN', 'http')
     )
 ));
+                   
 
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
+
+
 
 
 
@@ -92,8 +106,8 @@ $app->get('/', function(Request $request) use ($app) {
 $app['debug'] = true;
 
 
+ $app->boot();
 
-$app->boot();
 $app->run();
 
 

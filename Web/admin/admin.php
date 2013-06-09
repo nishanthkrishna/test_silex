@@ -22,6 +22,7 @@ $admin->match('/content/{table}/add', function (Request $request, Silex\Applicat
             $form = $app['form.factory']->create(new SilexF\Form\TableType($app, $table));
             if ('POST' == $request->getMethod()) {
                 $form->bind($request);
+           
                 if ($form->isValid()) {
                     $data = $form->getData();
                     $app['db']->insert($table, $data);

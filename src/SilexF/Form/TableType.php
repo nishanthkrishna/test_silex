@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Pimple;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Symfony\Component\Validator\Constraints as Assert;
 
 Class TableType extends AbstractType {
 
@@ -42,8 +43,9 @@ Class TableType extends AbstractType {
                 switch ($column->getType()) {
                     case 'Integer':
                         $builder->add($column->getName(), 'integer', array(
-                            'read_only' => ( in_array($column->getName(), $primary_keys) and $column->getAutoincrement()) ? true : false,
+                            'read_only' => ( in_array($column->getName(), $primary_keys) or $column->getAutoincrement()) ? true : false,
                             'required' => $column->getNotNull(),
+                            'constraints' => ( $column->getNotNull() and !$column->getAutoincrement()) ? array(new Assert\NotNull()) : array(), 
                         ));
                         break;
 
